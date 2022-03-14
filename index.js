@@ -1,34 +1,40 @@
-function encrypt(text, key) {
-    var crypto = require('crypto');
-    var alg = 'des-ede-cbc';
-    var key = new Buffer(key, 'utf-8');
-    var iv = new Buffer('thisisawsomekey', 'base64');    //This is from c# cipher iv
-  
-    var cipher = crypto.createCipheriv(alg, key, iv);
-    var encoded = cipher.update(text, 'ascii', 'base64');
-    encoded += cipher.final('base64');
-  
-    return encoded;
-  }
-  
-  function decrypt(encryptedText, key) {
-    var crypto = require('crypto');
-    var alg = 'des-ede-cbc';
-    var key = new Buffer(key, 'utf-8');
-    var iv = new Buffer('thisisawsomekey', 'base64');    //This is from c# cipher iv
-  
-    var encrypted = new Buffer(encryptedText, 'base64');
-    var decipher = crypto.createDecipheriv(alg, key, iv);
-    var decoded = decipher.update(encrypted, 'binary', 'ascii');
-    decoded += decipher.final('ascii');
-  
-    return decoded;
-  }
-  
-  var text = 'The text to be encrypted';
-  var securityKey = 'mysecretekey';
-  var encryptedText = encrypt(text, securityKey);
-  var decryptedText = decrypt(encryptedText, securityKey);
-  
-  console.log('encrypted text:', encryptedText);
-  console.log('decrypted text:', decryptedText);
+// crypto module
+const crypto = require("crypto");
+const algorithm = "aes-256-cbc"; 
+// generate 16 bytes of random data
+const initVector = crypto.randomBytes(16);
+// secret key generate 32 bytes of random data
+const Securitykey = crypto.randomBytes(32);
+
+//data encryption function 
+function encrypt(text){
+  // the cipher function
+  const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
+  // encrypt the message
+  // input encoding
+  // output encoding
+  let encryptedData = cipher.update(text, "utf-8", "hex");
+  encryptedData += cipher.final("hex");
+  return encryptedData;
+}
+
+//data decryption function 
+function decrypt(encryptedMessage){
+  // the decipher function
+  const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
+  let decryptedData = decipher.update(encryptedMessage, "hex", "utf-8");
+  decryptedData += decipher.final("utf8");
+  return decryptedData;
+}
+
+// protected data
+const message = "This is a secret message";
+// encrypt data
+let data = encrypt(message);
+//output
+console.log("Encrypted data "+ data);
+
+//decrypt data
+let plainMessage = decrypt(data);
+//output
+console.log("Decrypted data: "+ plainMessage);
